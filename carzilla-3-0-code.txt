@@ -1,0 +1,68 @@
+/*
+Car Bot THE DESTROYER by Colleen AF Venable 
+Based on the following example: 
+Simple Arduino and HC-SR04 Example by Jonathan Vester: https://www.instructables.com/id/Simple-Ardui­no-and-HC-SR04-Example
+*/
+
+// Include the servo library 
+#include <Servo.h> 
+#define trigPin 13 
+#define echoPin 12 
+#define led 8 
+#define buzzer 11 
+
+// Tell the Arduino there are two continuous servos 
+Servo ContinuousServo1; 
+Servo ContinuousServo2; 
+
+void setup(){ 
+  Serial.begin (9600); 
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT); 
+  pinMode(led, OUTPUT); 
+  pinMode(buzzer, OUTPUT); // Set buzzer - pin 11 as an output
+  
+  // Attach the continuous servos to pins 6 and 7 
+  ContinuousServo1.attach(6); 
+  ContinuousServo2.attach(7); 
+  
+  // Start the continuous servos in a paused position 
+  // if they continue to spin slightly, 
+  // change these numbers until they stop 
+  ContinuousServo1.write(94); 
+  ContinuousServo2. write(94);
+}
+void loop() { 
+  long duration, distance;
+  digitalWrite(trigPin, LOW); 
+  delayMicroseconds(2); 
+  digitalWrite(trigPin, HIGH); 
+  delayMicroseconds(10); 
+  digitalWrite(trigPin, LOW); 
+  duration = pulseIn(echoPin, HIGH); 
+  distance = (duration/2) / 29.1; 
+  
+  if (distance < 10 && distance >= 0) { 
+    // stop bot and turn LED on 
+    digitalWrite(led, HIGH); 
+    ContinuousServo1.write(94);
+    ContinuousServo2.write(94); 
+    tone(buzzer, 1000); // Send 1KHz sound signal
+  }
+  else { 
+    digitalWrite(led, LOW); // turn the LED light off
+    // go forward 
+    ContinuousServo1.write(84); 
+    ContinuousServo2.write(104); 
+    noTone(buzzer); 
+  }
+  if (distance >= 200 || distance < 0){
+    Serial.print("Out of range: ");
+    Serial.print(distance); 
+    Serial.println(" cm"); 
+  } else { 
+  Serial.print(distance); 
+  Serial.println(" cm"); 
+    }
+  delay(500); 
+ }
